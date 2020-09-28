@@ -13,7 +13,7 @@
  Другими словами: функция должна возвращать в неизменном виде то, что поступает ей на вход
  */
 function returnFirstArgument(value) {
-  return value
+    return value
 }
 returnFirstArgument('привет')
 
@@ -32,7 +32,7 @@ returnFirstArgument('привет')
    sumWithDefaults(10) вернет 110
  */
 function sumWithDefaults(a, b = 100) {
-  return a + b
+    return a + b
 }
 sumWithDefaults(10)
 
@@ -45,11 +45,9 @@ sumWithDefaults(10)
    returnFnResult(() => 'привет') вернет 'привет'
  */
 function returnFnResult(fn) {
-  return fn()
+    return fn()
 }
 returnFnResult(() => 'привет')
-
-
 
 /*
  Задание 4:
@@ -65,15 +63,15 @@ returnFnResult(() => 'привет')
    console.log(f()); // выведет 13
  */
 function returnCounter(value = 0) {
-  return function () {
-    return ++value
-  }
+    return function () {
+        return ++value
+    }
 }
-var f = returnCounter(10)
-console.log(f());
-console.log(f());
-console.log(f());
+let f = returnCounter(10)
 
+f();
+f();
+f();
 
 /*
  Задание 5 *:
@@ -85,7 +83,7 @@ console.log(f());
    returnArgumentsArray(1, 2, 3) вернет [1, 2, 3]
  */
 function returnArgumentsArray(...args) {
-  return args
+    return args
 }
 returnArgumentsArray(1, 2, 3)
 /*
@@ -105,22 +103,22 @@ returnArgumentsArray(1, 2, 3)
  */
 
 function bindFunction(fn, ...args) {
-  return fn.bind(undefined, ...args)
+    return fn.bind(undefined, ...args)
 }
 
 function sum(a, b) {
-  return a + b;
+    return a + b;
 }
 
 var newSum = bindFunction(sum, 2, 4);
 
-console.log(newSum())
+newSum()
 
 export {
-  returnFirstArgument,
-  sumWithDefaults,
-  returnArgumentsArray,
-  returnFnResult,
-  returnCounter,
-  bindFunction
+    returnFirstArgument,
+    sumWithDefaults,
+    returnArgumentsArray,
+    returnFnResult,
+    returnCounter,
+    bindFunction
 }
