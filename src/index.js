@@ -29,9 +29,9 @@ createDivWithText('loftschool')
  Пример:
    prepend(document.querySelector('#one'), document.querySelector('#two')) // добавит элемент переданный первым аргументом в начало элемента переданного вторым аргументом
  */
-// function prepend(what, where) {
-//     where.prepend(what)
-// }
+function prepend(what, where) {
+    where.prepend(what)
+}
 // prepend(document.querySelector('#one'), document.querySelector('#two'))
 /*
  Задание 3:
@@ -53,14 +53,12 @@ createDivWithText('loftschool')
    findAllPSiblings(document.body) // функция должна вернуть массив с элементами div и span т.к. следующим соседом этих элементов является элемент с тегом P
  */
 function findAllPSiblings(where) {
-    let elem = where.children
-    
     let newArr = []
 
-    for (let i = 0; i < elem.length; i++) {
+    for (const child of where.children) {
 
-        if (elem[i].nextElementSibling && elem[i].nextElementSibling.tagName === 'P') {
-            newArr.push(elem[i])
+        if (child.nextElementSibling && child.nextElementSibling.tagName === 'P') {
+            newArr.push(child)
         }
     }
 
@@ -84,16 +82,19 @@ findAllPSiblings(document.body)
 
    findError(document.body) // функция должна вернуть массив с элементами 'привет' и 'loftschool'
  */
-// function findError(where) {
-//     var result = [];
+function findError(where) {
+    var result = [];
 
-//     for (var child of where.childNodes) {
-//         result.push(child.innerText);
-//     }
+    for (var child of where.children) {
+        if (child.tagName.toLowerCase() !== 'script') {
+            result.push(child.innerText);
+        }
+    }
 
-//     return result;
-// }
+    return result;
+}
 
+findError(document.body);
 /*
  Задание 5:
 
@@ -103,12 +104,21 @@ findAllPSiblings(document.body)
  Так же будьте внимательны при удалении узлов, т.к. можно получить неожиданное поведение при переборе узлов
 
  Пример:
-   После выполнения функции, дерево <div></div>привет<p></p>loftchool!!!
+   После выполнения функции, дерево <div></div>привет<p></p>loftchool!!!01 
    должно быть преобразовано в <div></div><p></p>
  */
-// function deleteTextNodes(where) {
-// }
+function deleteTextNodes(where) {
+    for (let i = 0; i < where.childNodes.length; i++) {
+        let child = where.childNodes[i]
 
+        if (child.nodeType === 3) {
+            where.removeChild(child)
+            i--
+        }
+    }
+}
+
+deleteTextNodes(document.body)
 /*
  Задание 6:
 
@@ -120,9 +130,19 @@ findAllPSiblings(document.body)
    После выполнения функции, дерево <span> <div> <b>привет</b> </div> <p>loftchool</p> !!!</span>
    должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
-// function deleteTextNodesRecursive(where) {
-// }
+function deleteTextNodesRecursive(where) {
+    for (let i = 0; i < where.childNodes.length; i++) {
+        let child = where.childNodes[i]
 
+        if (child.nodeType === 3) {
+            where.removeChild(child)
+            i--
+        } else {
+            deleteTextNodesRecursive(child)
+        }
+    }
+}
+deleteTextNodesRecursive(document.body)
 /*
  Задание 7 *:
 
@@ -143,9 +163,49 @@ findAllPSiblings(document.body)
      texts: 3
    }
  */
-// function collectDOMStat(root) {
-// }
+function collectDOMStat(root) {
+    let newObj = {
+        tags: {},
+        classes: {},
+        texts: 0
+    }
 
+    function recurs(root) {
+        for (let elem of root.childNodes) {
+
+            if (elem.nodeType === 1 && elem.tagName !== 'SCRIPT') {
+
+                if (newObj.tags[elem.tagName]) {
+                    ++newObj.tags[elem.tagName]
+                } else {
+                    newObj.tags[elem.tagName] = 1
+                }
+
+                if (elem.classList) {
+                    for (let i = 0; i < elem.classList.length; i++) {
+                        if (newObj.classes[elem.classList[i]]) {
+                            ++newObj.classes[elem.classList[i]]
+                        } else {
+                            newObj.classes[elem.classList[i]] = 1
+                        }
+                    }
+                }
+
+                recurs(elem)
+
+            } else if (elem.nodeType === 3) {
+                ++newObj.texts
+            }
+
+        }
+    }
+
+    recurs(root)
+
+    return newObj
+
+}
+collectDOMStat(document.body)
 /*
  Задание 8 *:
 
@@ -178,16 +238,16 @@ findAllPSiblings(document.body)
      nodes: [div]
    }
  */
-// function observeChildNodes(where, fn) {
-// }
+function observeChildNodes(where, fn) {
+}
 
 export {
     createDivWithText,
     prepend,
-    // findAllPSiblings,
-    // findError,
-    // deleteTextNodes,
-    // deleteTextNodesRecursive,
-    // collectDOMStat,
-    // observeChildNodes
+    findAllPSiblings,
+    findError,
+    deleteTextNodes,
+    deleteTextNodesRecursive,
+    collectDOMStat,
+    observeChildNodes
 };
