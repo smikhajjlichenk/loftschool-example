@@ -239,7 +239,36 @@ collectDOMStat(document.body)
    }
  */
 function observeChildNodes(where, fn) {
+  // Конфигурация observer (за какими изменениями наблюдать)
+  const config = {
+    childList: true,
+    subtree: true,
+  }
+
+  // Колбэк-функция при срабатывании мутации
+  const callback = function (mutationsList) {
+    mutationsList.forEach((mutation) => {
+      if ((mutation.type = 'childList')) {
+        fn({
+          type: mutation.addedNodes.length ? 'insert' : 'remove',
+          nodes: [
+            ...(mutation.addedNodes.length
+              ? mutation.addedNodes
+              : mutation.removedNodes),
+          ],
+        })
+      }
+    })
+  }
+
+  // Создаём экземпляр наблюдателя с указанной функцией колбэка
+  const observer = new MutationObserver(callback)
+
+  // Начинаем наблюдение за настроенными изменениями целевого элемента
+  observer.observe(where, config)
 }
+
+observeChildNodes(document.body, (obj) => obj)
 
 export {
     createDivWithText,
