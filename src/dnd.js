@@ -15,7 +15,22 @@
    const newDiv = document.createElement('div');
    homeworkContainer.appendChild(newDiv);
  */
-const homeworkContainer = document.querySelector('#homework-container');
+const homeworkContainer = document.querySelector("#homework-container");
+
+function random(from, to) {
+  return parseInt(Math.random() * (to - from) + from);
+}
+
+let currentDrug;
+let startX = 0;
+let startY = 0;
+
+document.addEventListener("mousemove", (e) => {
+  if (currentDrug) {
+    currentDrug.style.top = e.clientY - startY + "px";
+    currentDrug.style.left = e.clientX - startX + "px";
+  }
+});
 
 /*
  Функция должна создавать и возвращать новый div с классом draggable-div и случайными размерами/цветом/позицией
@@ -26,7 +41,28 @@ const homeworkContainer = document.querySelector('#homework-container');
    const newDiv = createDiv();
    homeworkContainer.appendChild(newDiv);
  */
+
 function createDiv() {
+  const div = document.createElement("div");
+  const minSize = 20;
+  const maxSize = 200;
+  const maxColor = 0xffffff;
+
+  div.className = "draggable-div";
+  div.style.background = "#" + random(0, maxColor).toString(16);
+  div.style.top = random(0, window.innerHeight) + "px";
+  div.style.left = random(0, window.innerWidth) + "px";
+  div.style.width = random(minSize, maxSize) + "px";
+  div.style.height = random(minSize, maxSize) + "px";
+
+  div.addEventListener("mousedown", (e) => {
+    currentDrug = div;
+    startX = e.offsetX;
+    startY = e.offsetY;
+  });
+  div.addEventListener("mouseup", () => (currentDrug = false));
+
+  return div;
 }
 
 /*
@@ -37,23 +73,31 @@ function createDiv() {
    homeworkContainer.appendChild(newDiv);
    addListeners(newDiv);
  */
-function addListeners(target) {
-}
 
-let addDivButton = homeworkContainer.querySelector('#addDiv');
+// function addListeners(target) {
+//   target.addEventListener("mousedown", (e) => {
+//     currentDrug = target;
+//     startX = e.offsetX;
+//     startY = e.offsetY;
+//   });
 
-addDivButton.addEventListener('click', function() {
-    // создать новый div
-    const div = createDiv();
+//   target.addEventListener("mouseup", () => (currentDrug = false));
+// }
 
-    // добавить на страницу
-    homeworkContainer.appendChild(div);
-    // назначить обработчики событий мыши для реализации D&D
-    addListeners(div);
-    // можно не назначать обработчики событий каждому div в отдельности, а использовать делегирование
-    // или использовать HTML5 D&D - https://www.html5rocks.com/ru/tutorials/dnd/basics/
+let addDivButton = homeworkContainer.querySelector("#addDiv");
+
+addDivButton.addEventListener("click", function () {
+  // создать новый div
+  const div = createDiv();
+
+  // добавить на страницу
+  homeworkContainer.appendChild(div);
+
+  // назначить обработчики событий мыши для реализации D&D
+  // addListeners(div);
+
+  // можно не назначать обработчики событий каждому div в отдельности, а использовать делегирование
+  // или использовать HTML5 D&D - https://www.html5rocks.com/ru/tutorials/dnd/basics/
 });
 
-export {
-    createDiv
-};
+export { createDiv };
