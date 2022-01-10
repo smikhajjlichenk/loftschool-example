@@ -28,45 +28,137 @@
    const newDiv = document.createElement('div');
    homeworkContainer.appendChild(newDiv);
  */
-const homeworkContainer = document.querySelector('#homework-container');
+
+const homeworkContainer = document.querySelector("#homework-container");
 
 /*
- Функция должна вернуть Promise, который должен быть разрешен с массивом городов в качестве значения
+Функция должна вернуть Promise, который должен быть разрешен с массивом городов в качестве значения
 
- Массив городов пожно получить отправив асинхронный запрос по адресу
- https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
- */
+Массив городов пожно получить отправив асинхронный запрос по адресу
+https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
+*/
+
 function loadTowns() {
+  return fetch(
+    "https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json"
+  )
+    .then((response) => response.json())
+    .then((towns) => towns.sort((a, b) => a.name.localeCompare(b.name)));
+  // .catch(() => []);
 }
 
 /*
- Функция должна проверять встречается ли подстрока chunk в строке full
- Проверка должна происходить без учета регистра символов
+Функция должна проверять встречается ли подстрока chunk в строке full
+Проверка должна происходить без учета регистра символов
 
- Пример:
-   isMatching('Moscow', 'moscow') // true
-   isMatching('Moscow', 'mosc') // true
-   isMatching('Moscow', 'cow') // true
-   isMatching('Moscow', 'SCO') // true
-   isMatching('Moscow', 'Moscov') // false
- */
+Пример:
+isMatching('Moscow', 'moscow') // true
+isMatching('Moscow', 'mosc') // true
+isMatching('Moscow', 'cow') // true
+isMatching('Moscow', 'SCO') // true
+isMatching('Moscow', 'Moscov') // false
+*/
+
 function isMatching(full, chunk) {
+  return full.toLowerCase().includes(chunk.toLowerCase());
 }
 
 /* Блок с надписью "Загрузка" */
-const loadingBlock = homeworkContainer.querySelector('#loading-block');
+const loadingBlock = homeworkContainer.querySelector("#loading-block");
 /* Блок с текстовым полем и результатом поиска */
-const filterBlock = homeworkContainer.querySelector('#filter-block');
+const filterBlock = homeworkContainer.querySelector("#filter-block");
 /* Текстовое поле для поиска по городам */
-const filterInput = homeworkContainer.querySelector('#filter-input');
+const filterInput = homeworkContainer.querySelector("#filter-input");
 /* Блок с результатами поиска */
-const filterResult = homeworkContainer.querySelector('#filter-result');
+const filterResult = homeworkContainer.querySelector("#filter-result");
+/* Блок с надписью "Не удалось загрузить города" и кнопкой "Повторить" */
+const loadingFailed = homeworkContainer.querySelector("#loading-failed");
+/* Кнопка "Повторить" */
+const retryBtn = homeworkContainer.querySelector("#retry-button");
 
-filterInput.addEventListener('keyup', function() {
-    // это обработчик нажатия кливиш в текстовом поле
+filterInput.addEventListener("keyup", function () {
+  // это обработчик нажатия кливиш в текстовом поле
+  updateFilter(this.value);
 });
 
-export {
-    loadTowns,
-    isMatching
-};
+let towns = [];
+
+// function tryToLoad() {
+//   return new Promise((resolve, reject) => {
+//     loadTowns().then((fetchData) => {
+//       if (Array.isArray(fetchData) && fetchData.length) {
+//         resolve(fetchData);
+//       } else {
+//         reject();
+//       }
+//     });
+//   });
+// }
+
+async function tryToLoad() {
+  try {
+    loadingBlock.style.display = "block";
+    retryBtn.style.display = "none";
+    loadingFailed.style.display = "none";
+    towns = await loadTowns();
+    loadingBlock.style.display = "none";
+    filterBlock.style.display = "block";
+  } catch (e) {
+    loadingBlock.style.display = "none";
+    retryBtn.style.display = "block";
+    loadingFailed.style.display = "block";
+  }
+}
+
+function updateFilter(value) {
+  filterResult.innerHTML = "";
+  const fragment = document.createDocumentFragment();
+
+  for (const town of towns) {
+    if (value && isMatching(town.name, value)) {
+      const divTown = document.createElement("div");
+      divTown.textContent = town.name;
+      fragment.append(divTown);
+    }
+  }
+
+  filterResult.append(fragment);
+}
+
+// retryBtn.addEventListener("click", () =>
+//   tryToLoad()
+//     .then((res) => {
+//       loadingBlock.style.display = "block";
+//       retryBtn.style.display = "none";
+//       loadingFailed.style.display = "none";
+//       towns = res;
+//       loadingBlock.style.display = "none";
+//       filterBlock.style.display = "block";
+//     })
+//     .catch(() => {
+//       loadingBlock.style.display = "none";
+//       retryBtn.style.display = "block";
+//       loadingFailed.style.display = "block";
+//     })
+// );
+
+retryBtn.addEventListener("click", () => tryToLoad());
+
+// tryToLoad()
+//   .then((res) => {
+//     loadingBlock.style.display = "block";
+//     retryBtn.style.display = "none";
+//     loadingFailed.style.display = "none";
+//     towns = res;
+//     loadingBlock.style.display = "none";
+//     filterBlock.style.display = "block";
+//   })
+//   .catch(() => {
+//     loadingBlock.style.display = "none";
+//     retryBtn.style.display = "block";
+//     loadingFailed.style.display = "block";
+//   });
+
+tryToLoad();
+
+export { loadTowns, isMatching };
